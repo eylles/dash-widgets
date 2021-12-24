@@ -39,7 +39,7 @@ function sound.new(options)
   local bar_height = options and options.bar_height or 5
   local device_type = options and options.device_type or "sink"
   local icon_img = options and options.icon_paths or {}
-  local MUTED = "yes"
+  local MUTED = "no"
   local vol_val = 0
 
   local pulse_device = {}
