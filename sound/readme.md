@@ -28,8 +28,9 @@ those is the default (ie when the default sink is on a bluetooth device change t
 | `device_type`   | the type of pulse device to control (sink or source)               | string       | "sink"        |
 | `icon_img`      | table that contains the height, internal and external icon (paths) | table        | nil           |
 
-[1]note: if you don't set col_bg then a darker shade of col_fg will be calculated
-[2]note: if you don't set col_handle then a lighter shade of col_fg will be calculated
+[1] note: if you don't set col_bg then a darker shade of col_fg will be calculated
+
+[2] note: if you don't set col_handle then a lighter shade of col_fg will be calculated
 
 ## config examples
 
