@@ -18,15 +18,18 @@ those is the default (ie when the default sink is on a bluetooth device change t
 
 ## config options
 
-| Variable      | Description                                                        | Type         | Default Value |
-| ---           | ---                                                                | ------       | ------        |
-| `col_mute`    | color of the bar and handle when mute                              | string (hex) | "#ff0000"     |
-| `col_fg`      | the active color of the slider and border of the handle            | string (hex) | "#00ffff"     |
-| `col_bg`      | the background color of the bar,                                   | string (hex) | "#006666"     |
-| `col_handle`  | the color of the handle when not mute                              | string (hex) | "#ffffff"     |
-| `bar_height`  | the height of the slider bar                                       | integer      | 5             |
-| `device_type` | the type of pulse device to control (sink or source)               | string       | "sink"        |
-| `icon_img`    | table that contains the height, internal and external icon (paths) | table        | nil           |
+| Variable        | Description                                                        | Type         | Default Value |
+| ---             | ---                                                                | ------       | ------        |
+| `col_mute`      | color of the bar and handle when mute                              | string (hex) | "#ff0000"     |
+| `col_fg`        | the active color of the slider and border of the handle            | string (hex) | "#00ffff"     |
+| `col_bg`[1]     | the background color of the bar,                                   | string (hex) | "#006666"     |
+| `col_handle`[2] | the color of the handle when not mute                              | string (hex) | "#ffffff"     |
+| `bar_height`    | the height of the slider bar                                       | integer      | 5             |
+| `device_type`   | the type of pulse device to control (sink or source)               | string       | "sink"        |
+| `icon_img`      | table that contains the height, internal and external icon (paths) | table        | nil           |
+
+[1]note: if you don't set col_bg then a darker shade of col_fg will be calculated
+[2]note: if you don't set col_handle then a lighter shade of col_fg will be calculated
 
 ## config examples
 
@@ -56,11 +59,10 @@ local micimg = {
 }
 local mic_widget = sound.new({bar_height = 5, col_mute = "#454345", col_fg = "#697EC2", device_type = "source", icon_paths = micimg})
 
-...
+-- sum configs here
 
 globalkeys = gears.table.join(
 -- sum bindings here
-...
 
     awful.key({ }, "XF86AudioRaiseVolume", function() speaker_widget:set_volume("+5") end),
     awful.key({ }, "XF86AudioLowerVolume", function() speaker_widget:set_volume("-5") end),
@@ -78,7 +80,6 @@ globalkeys = gears.table.join(
     awful.key({ modkey, "Shift" }, "F6", function() mic_widget:set_volume("-5") end, {description = "Lower Microphone Volume", group = "volume"}),
     awful.key({ modkey }, "F8", function() mic_widget:toggle_mute() end, {description = "Mute Microphone", group = "volume"}),
 
-...
 -- sum bindings here
+)
 ```
-
