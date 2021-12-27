@@ -65,20 +65,20 @@ local mic_widget = sound.new({bar_height = 5, col_mute = "#454345", col_fg = "#6
 globalkeys = gears.table.join(
 -- sum bindings here
 
-    awful.key({ }, "XF86AudioRaiseVolume", function() speaker_widget:set_volume("+5") end),
-    awful.key({ }, "XF86AudioLowerVolume", function() speaker_widget:set_volume("-5") end),
+    awful.key({ }, "XF86AudioRaiseVolume", function() speaker_widget:set_volume("+", 5) end),
+    awful.key({ }, "XF86AudioLowerVolume", function() speaker_widget:set_volume("-", 5) end),
     awful.key({ }, "XF86AudioMute",        function() speaker_widget:toggle_mute() end),
     -- fallbacks if media keys not physically present
-    awful.key({ modkey }, "F7", function() speaker_widget:set_volume("+5") end, {description = "Raise Audio Volume", group = "volume"}),
-    awful.key({ modkey }, "F6", function() speaker_widget:set_volume("-5") end, {description = "Lower Audio Volume", group = "volume"}),
+    awful.key({ modkey }, "F7", function() speaker_widget:set_volume("+", 5) end, {description = "Raise Audio Volume", group = "volume"}),
+    awful.key({ modkey }, "F6", function() speaker_widget:set_volume("-", 5) end, {description = "Lower Audio Volume", group = "volume"}),
     awful.key({ modkey }, "F5", function() speaker_widget:toggle_mute() end, {description = "Mute Audio", group = "volume"}),
 
-    awful.key({ "Shift" }, "XF86AudioRaiseVolume", function() mic_widget:set_volume("+5") end),
-    awful.key({ "Shift" }, "XF86AudioLowerVolume", function() mic_widget:set_volume("-5") end),
+    awful.key({ "Shift" }, "XF86AudioRaiseVolume", function() mic_widget:set_volume("+", 5) end),
+    awful.key({ "Shift" }, "XF86AudioLowerVolume", function() mic_widget:set_volume("-", 5) end),
     awful.key({ }, "XF86AudioMicMute",     function() mic_widget:toggle_mute() end),
     -- fallbacks if media keys not physically present
-    awful.key({ modkey, "Shift" }, "F7", function() mic_widget:set_volume("+5") end, {description = "Raise Microphone Volume", group = "volume"}),
-    awful.key({ modkey, "Shift" }, "F6", function() mic_widget:set_volume("-5") end, {description = "Lower Microphone Volume", group = "volume"}),
+    awful.key({ modkey, "Shift" }, "F7", function() mic_widget:set_volume("+", 5) end, {description = "Raise Microphone Volume", group = "volume"}),
+    awful.key({ modkey, "Shift" }, "F6", function() mic_widget:set_volume("-", 5) end, {description = "Lower Microphone Volume", group = "volume"}),
     awful.key({ modkey }, "F8", function() mic_widget:toggle_mute() end, {description = "Mute Microphone", group = "volume"}),
 
 -- sum bindings here

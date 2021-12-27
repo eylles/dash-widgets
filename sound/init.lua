@@ -41,6 +41,7 @@ function sound.new(options)
   local icon_img = options and options.icon_paths or {}
   local MUTED = "no"
   local vol_val = 0
+  local is_dragging = false
 
   local pulse_device = {}
   if device_type == "sink" then
@@ -88,26 +89,27 @@ function sound.new(options)
 
   -- callback that emits a signal
   local function update_callback_signal(stdout)
-    local volume = ""
-    local mute = ""
-    for line in stdout:gmatch("[^\n]+") do
-      local k, v = line:match("^%s*([^:]*): (.*)")
-      if k == "Volume" then
-        local percent = v:match("front.-([0-9]*)%%")
-        volume = tonumber(percent) or 0
-      elseif k == "Mute" then
-        if v == "yes" then
-          mute = v
-        elseif v == "no" then
-          mute = v
+    local volume = vol_val
+    local mute = MUTED
+    if not is_dragging then
+      for line in stdout:gmatch("[^\n]+") do
+        local k, v = line:match("^%s*([^:]*): (.*)")
+        if k == "Volume" then
+          local percent = v:match("front.-([0-9]*)%%")
+          volume = tonumber(percent) or 0
+        elseif k == "Mute" then
+          if v == "yes" then
+            mute = v
+          elseif v == "no" then
+            mute = v
+          end
         end
       end
-    end
-    if (volume ~= vol_val) or (mute ~= MUTED) then
-      awesome.emit_signal(signal_name, volume, mute)
-      -- naughty.notify ({ text = "emitting signal " .. signal_name })
-      vol_val = volume
-      MUTED = mute
+      if (volume ~= vol_val) or (mute ~= MUTED) then
+        awesome.emit_signal(signal_name, volume, mute)
+        vol_val = volume
+        MUTED = mute
+      end
     end
   end
 
@@ -141,12 +143,28 @@ function sound.new(options)
     layout = wibox.layout.align.horizontal,
   }
 
+  vol_slide:connect_signal("drag_start",
+    function()
+      is_dragging = true
+    end
+  )
+
   vol_slide:connect_signal("drag",
     function()
       awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
     end
   )
 
+  vol_slide:connect_signal("drag_end",
+    function()
+      awful.spawn.easy_async_with_shell(
+      'LANG=C sleep 4 && echo',
+      function(stdout)
+        is_dragging = false
+      end
+      )
+    end
+  )
   awesome.connect_signal(signal_name,
     function(volume, mute)
       vol_slide.value = volume
@@ -162,13 +180,27 @@ function sound.new(options)
     end
   )
 
-  widget.set_volume = function(self, val)
-    awful.spawn.with_shell(set_vol_cmd .. val .. '%')
+  widget.set_volume = function(self, operation, value)
+    is_dragging = true
+    local volume = vol_slide.value
+    if operation == "+" then
+      volume = math.min(volume + value, 100)
+    elseif operation == "-" then
+      volume = math.max(0, volume - value)
+     end
+    awful.spawn.with_shell(set_vol_cmd .. volume .. '%')
+    vol_slide.value = volume
+    awful.spawn.easy_async_with_shell(
+    'LANG=C sleep 2 && echo',
+    function(stdout)
+      is_dragging = false
+    end
+    )
   end
 
   vol_slide:buttons(awful.util.table.join(
-  awful.button({  }, 4, function() widget:set_volume("+5") end),
-  awful.button({  }, 5, function() widget:set_volume("-5") end)
+  awful.button({  }, 4, function() widget:set_volume("+", 5) end),
+  awful.button({  }, 5, function() widget:set_volume("-", 5) end)
   ))
 
   widget.toggle_mute = function(self)
