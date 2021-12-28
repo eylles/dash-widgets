@@ -136,6 +136,12 @@ function sound.new(options)
     }
     )
 
+  awesome.connect_signal("exit",
+      function()
+          awful.spawn.with_shell("pkill --full 'pactl subscribe'")
+      end
+      )
+
   local widget = wibox.widget {
     { icon, right = 5, widget = wibox.container.margin },
     vol_slide,
