@@ -6,7 +6,6 @@ local gears = require("gears")
 local slider = require("dash-widgets.base-widget.slider_drag")
 local mouse = mouse
 local mousegrabber = mousegrabber
-local naughty = require("naughty")
 
 -- from the theme.lua file
 local function mix(color1, color2, ratio)
@@ -44,6 +43,7 @@ function sound.new(options)
     local vol_val = 0
     local is_dragging = false
     local default_device = ""
+    local device_port = ""
 
     local pulse_device = {}
     if device_type == "sink" then
@@ -56,11 +56,10 @@ function sound.new(options)
 
     local get_default_device = string.format("pactl get-default-%s", pulse_device[1])
 
-    local get_vol_cmd  = string.format("pactl get-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
-    local get_mute_cmd = string.format("pactl get-%s-mute   @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local set_vol_cmd  = string.format("pactl set-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local set_mute_cmd = string.format("pactl set-%s-mute   @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
-    local update_cmd = get_vol_cmd .. " ; " .. get_mute_cmd
+    -- local update_cmd = get_vol_cmd .. " ; " .. get_mute_cmd
+    local update_cmd = string.format("pactl list %ss", pulse_device[1])
 
     -- the slider itself
     local vol_slide = wibox.widget {
@@ -80,8 +79,9 @@ function sound.new(options)
     }
 
     -- icon widget
-    local icon = wibox.widget {
+    local icon_widget = wibox.widget {
         {
+            id = "icon",
             image = icon_img.internal,
             forced_height = icon_img.height,
             halign = "center",
@@ -95,26 +95,37 @@ function sound.new(options)
     local function update_callback_signal(stdout)
         local volume = vol_val
         local mute = MUTED
+        local active_port = device_port
+        local active = false
         if not is_dragging then
             for line in stdout:gmatch("[^\n]+") do
                 local k, v = line:match("^%s*([^:]*): (.*)")
-                -- if k == "Name" then
-                if k == "Volume" then
-                    local percent = v:match("front.-([0-9]*)%%")
-                    volume = tonumber(percent) or 0
-                elseif k == "Mute" then
-                    if v == "yes" then
-                        mute = v
-                    elseif v == "no" then
-                        mute = v
+                if k == "Name" then
+                    if v == default_device then
+                        active = true
+                    else
+                        active = false
                     end
-                -- elseif k == "Active Port" then
+                elseif active then
+                    if k == "Volume" then
+                        local percent = v:match("front.-([0-9]*)%%")
+                        volume = tonumber(percent) or 0
+                    elseif k == "Mute" then
+                        -- if v == "yes" then
+                            mute = v
+                        -- elseif v == "no" then
+                            -- mute = v
+                        -- end
+                    elseif k == "Active Port" then
+                        device_port = v
+                    end
                 end
             end
-            if (volume ~= vol_val) or (mute ~= MUTED) then
-                awesome.emit_signal(signal_name, volume, mute)
+            if (volume ~= vol_val) or (mute ~= MUTED) or (active_port ~= device_port) then
+                awesome.emit_signal(signal_name, volume, mute, active_port)
                 vol_val = volume
                 MUTED = mute
+                device_port = active_port
             end
         end
     end
@@ -128,12 +139,12 @@ function sound.new(options)
                         default_device = line
                     end
                 end
-            end
-        )
-        awful.spawn.easy_async_with_shell(
-            'LANG=C ' .. cmd,
-            function(stdout)
-                update_callback_signal(stdout)
+                awful.spawn.easy_async_with_shell(
+                    'LANG=C ' .. cmd,
+                    function(stdout)
+                        update_callback_signal(stdout)
+                    end
+                )
             end
         )
     end
@@ -159,7 +170,7 @@ function sound.new(options)
     )
 
     local widget = wibox.widget {
-        { icon, right = 5, widget = wibox.container.margin },
+        { icon_widget, right = 5, widget = wibox.container.margin },
         vol_slide,
         forced_height = icon_img.height,
         layout = wibox.layout.align.horizontal,
@@ -188,7 +199,7 @@ function sound.new(options)
         end
     )
     awesome.connect_signal(signal_name,
-        function(volume, mute)
+        function(volume, mute, active_port)
             vol_slide.value = volume
             if mute == "no" then
                 vol_slide.bar_color = col_bg
@@ -198,6 +209,11 @@ function sound.new(options)
                 vol_slide.bar_color = col_mute
                 vol_slide.bar_active_color = col_mute
                 vol_slide.handle_color = col_mute
+            end
+            if active_port:find("internal") or active_port:find("analog") then
+                icon_widget.icon:set_image(icon_img.internal)
+            else
+                icon_widget.icon:set_image(icon_img.external)
             end
         end
     )
@@ -235,7 +251,7 @@ function sound.new(options)
         awful.spawn.with_shell(set_mute_cmd .. setting)
     end
 
-    icon:buttons(awful.util.table.join(
+    icon_widget:buttons(awful.util.table.join(
         awful.button({  }, 1, function() widget:toggle_mute() end)
     ))
 
