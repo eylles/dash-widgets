@@ -4,7 +4,7 @@ This is a slider widget that provides a pulse device control for the default sou
 The backend uses pactl exclusively wiht the intention it is also compatible with pipewire.
 
 the wdiget used called slider_drag is an (at the time) open Pull Request on the awesome wm github
-repo `https://github.com/awesomeWM/awesome/pull/3533`, however this repo targets the stable release
+repo https://github.com/awesomeWM/awesome/pull/3533, however this repo targets the stable release
 of awesome (awesome v4.3) fortunately the slider from the master branch and more important the one
 from the PR is compatible with v4.3 without any issue, so for the time being i'm just providing the
 base widget on this repo straight from the PR, as soon as awesome v4.4 is out i'm changing this to
@@ -84,3 +84,11 @@ globalkeys = gears.table.join(
 -- sum bindings here
 )
 ```
+
+# License
+
+having used and contributed some PRs to https://github.com/gobolinux/gobo-awesome-sound ideas from
+there stuck with me and quite an amount of the internals of this widget were taken from or heavily
+inspired by it as such i'm licensing this widget under the same license, even tho the repo as a
+whole is under the gpl v2 license, the code of the widget is covered under the terms of the MIT
+license.
