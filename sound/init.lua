@@ -6,6 +6,7 @@ local gears = require("gears")
 local slider = require("dash-widgets.base-widget.slider_drag")
 local mouse = mouse
 local mousegrabber = mousegrabber
+local naughty = require("naughty")
 
 -- from the theme.lua file
 local function mix(color1, color2, ratio)
@@ -117,7 +118,7 @@ function sound.new(options)
                             -- mute = v
                         -- end
                     elseif k == "Active Port" then
-                        device_port = v
+                        active_port = v
                     end
                 end
             end
