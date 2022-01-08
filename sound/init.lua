@@ -6,7 +6,6 @@ local gears = require("gears")
 local slider = require("dash-widgets.base-widget.slider_drag")
 local mouse = mouse
 local mousegrabber = mousegrabber
-local naughty = require("naughty")
 
 -- from the theme.lua file
 local function mix(color1, color2, ratio)
@@ -54,12 +53,9 @@ function sound.new(options)
     end
 
     local signal_name = string.format("volume::%s", device_type)
-
     local get_default_device = string.format("pactl get-default-%s", pulse_device[1])
-
     local set_vol_cmd  = string.format("pactl set-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local set_mute_cmd = string.format("pactl set-%s-mute   @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
-    -- local update_cmd = get_vol_cmd .. " ; " .. get_mute_cmd
     local update_cmd = string.format("pactl list %ss", pulse_device[1])
 
     -- the slider itself
@@ -112,11 +108,7 @@ function sound.new(options)
                         local percent = v:match("front.-([0-9]*)%%")
                         volume = tonumber(percent) or 0
                     elseif k == "Mute" then
-                        -- if v == "yes" then
                             mute = v
-                        -- elseif v == "no" then
-                            -- mute = v
-                        -- end
                     elseif k == "Active Port" then
                         active_port = v
                     end
