@@ -234,6 +234,33 @@ function sound.new(options)
         awful.button({  }, 5, function() widget:set_volume("-", 5) end)
     ))
 
+    -- Hover thingy
+    vol_slide:connect_signal("mouse::enter", function(c)
+        local wb = mouse.current_wibox
+        old_cursor, old_wibox = wb.cursor, wb
+        wb.cursor = "hand1"
+    end)
+
+    vol_slide:connect_signal("mouse::leave", function(c)
+        if old_wibox then
+            old_wibox.cursor = old_cursor
+            old_wibox = nil
+        end
+    end)
+
+    icon_widget:connect_signal("mouse::enter", function(c)
+        local wb = mouse.current_wibox
+        old_cursor, old_wibox = wb.cursor, wb
+        wb.cursor = "hand1"
+    end)
+
+    icon_widget:connect_signal("mouse::leave", function(c)
+        if old_wibox then
+            old_wibox.cursor = old_cursor
+            old_wibox = nil
+        end
+    end)
+
     widget.toggle_mute = function(self)
         local setting = MUTED
         if setting == "yes" then
