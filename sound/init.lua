@@ -184,7 +184,7 @@ function sound.new(options)
     vol_slide:connect_signal("drag_end",
         function()
             awful.spawn.easy_async_with_shell(
-                'LANG=C sleep 4 && echo',
+                'LANG=C sleep 0.8 && echo',
                 function(stdout)
                     is_dragging = false
                 end
@@ -222,7 +222,7 @@ function sound.new(options)
         vol_slide.value = volume
         awful.spawn.with_shell(set_vol_cmd .. volume .. '%')
         awful.spawn.easy_async_with_shell(
-            'LANG=C sleep 2 && echo',
+            'LANG=C sleep 0.8 && echo',
             function(stdout)
                 is_dragging = false
             end
