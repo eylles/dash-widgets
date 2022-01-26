@@ -47,13 +47,14 @@ function sound.new(options)
 
     local pulse_device = {}
     if device_type == "sink" then
-        pulse_device = { "sink", "SINK" }
+        pulse_device = { "sink", "SINK", "Sink" }
     elseif device_type == "source" then
-        pulse_device = { "source", "SOURCE" }
+        pulse_device = { "source", "SOURCE", "Source" }
     end
 
     local signal_name = string.format("volume::%s", device_type)
-    local get_default_device = string.format("pactl get-default-%s", pulse_device[1])
+    local get_default_device = string.format("pactl info")
+    local match_default_device = string.format("Default %s", pulse_device[3])
     local set_vol_cmd  = string.format("pactl set-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local set_mute_cmd = string.format("pactl set-%s-mute   @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local update_cmd = string.format("pactl list %ss", pulse_device[1])
@@ -128,9 +129,8 @@ function sound.new(options)
             'LANG=C ' .. get_default_device,
             function(stdout)
                 for line in stdout:gmatch("[^\n]+") do
-                    if default_device ~= line then
-                        default_device = line
-                    end
+                    local k, v = line:match("^%s*([^:]*): (.*)")
+                    if k == match_default_device then default_device = v end
                 end
                 awful.spawn.easy_async_with_shell(
                     'LANG=C ' .. cmd,
