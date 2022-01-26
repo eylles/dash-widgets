@@ -14,6 +14,14 @@ Mind you this widget still ain't on it's final form, still need to implement a c
 sink/source so the widget can know to use the icons for sinks/sources on external cards when one of
 those is the default (ie when the default sink is on a bluetooth device change the icon to external)
 
+# requirements
+
+the main requirement is `pactl` (pulseaudio-utils package in debian), which i reccomed to be at
+least version 14.2 (since i have not tested in older versions), for pulseaudio version 14.2 is
+encouraged (unless someone wants to test in an older release), for pipewire i cannot dictate any
+version since i just recently switched to it and i'm in 0.3.43, so anyone who wants to test an older
+release feel welcome to do so.
+
 # configuration
 
 ## config options
