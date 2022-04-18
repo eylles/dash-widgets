@@ -181,6 +181,14 @@ function sound.new(options)
         end
     )
 
+    vol_slide:connect_signal("button::press",
+        function()
+            if not is_dragging then
+                awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
+            end
+        end
+    )
+
     vol_slide:connect_signal("drag_end",
         function()
             awful.spawn.easy_async_with_shell(
