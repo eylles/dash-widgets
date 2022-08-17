@@ -149,7 +149,7 @@ function sound.new(options)
     --- first update
     volume_info(update_cmd)
 
-    local vol_daemon = string.format([[bash -c "LANG=C pactl subscribe 2> /dev/null | grep --line-buffered \"Event 'change' on %s #\""]], pulse_device[1])
+    local vol_daemon = string.format([[dash -c "LANG=C pactl subscribe 2> /dev/null | grep --line-buffered \"Event 'change' on %s #\""]], pulse_device[1])
 
     awful.spawn.with_line_callback(
         vol_daemon,
