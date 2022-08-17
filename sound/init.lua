@@ -95,6 +95,7 @@ function sound.new(options)
         local mute = MUTED
         local active_port = device_port
         local active = false
+        local line = nil
         if not is_dragging then
             for line in stdout:gmatch("[^\n]+") do
                 local k, v = line:match("^%s*([^:]*): (.*)")
@@ -115,6 +116,7 @@ function sound.new(options)
                     end
                 end
             end
+            line = nil
             if (volume ~= vol_val) or (mute ~= MUTED) or (active_port ~= device_port) then
                 awesome.emit_signal(signal_name, volume, mute, active_port)
                 vol_val = volume
@@ -128,10 +130,12 @@ function sound.new(options)
         awful.spawn.easy_async_with_shell(
             'LANG=C ' .. get_default_device,
             function(stdout)
+                local line = nil
                 for line in stdout:gmatch("[^\n]+") do
                     local k, v = line:match("^%s*([^:]*): (.*)")
                     if k == match_default_device then default_device = v end
                 end
+                line = nil
                 awful.spawn.easy_async_with_shell(
                     'LANG=C ' .. cmd,
                     function(stdout)
