@@ -89,6 +89,13 @@ function sound.new(options)
         widget = wibox.container.place
     }
 
+    local widget = wibox.widget {
+        { icon_widget, right = 5, widget = wibox.container.margin },
+        vol_slide,
+        forced_height = icon_img.height,
+        layout = wibox.layout.align.horizontal,
+    }
+
     -- callback that emits a signal
     local function update_callback_signal(stdout)
         local volume = vol_val
@@ -162,58 +169,59 @@ function sound.new(options)
 
     awesome.connect_signal("exit",
         function()
-            awful.spawn.with_shell("pkill --full 'pactl subscribe'")
+            awful.spawn("pkill --full 'pactl subscribe'", false)
         end
     )
 
-    local widget = wibox.widget {
-        { icon_widget, right = 5, widget = wibox.container.margin },
-        vol_slide,
-        forced_height = icon_img.height,
-        layout = wibox.layout.align.horizontal,
-    }
-
-    vol_slide:connect_signal("drag_start",
+    vol_slide:connect_signal("property::value",
         function()
-            is_dragging = true
+            local volume_level = vol_slide:get_value()
+            awful.spawn(set_vol_cmd .. volume_level .. "%", false)
         end
     )
 
-    vol_slide:connect_signal("drag",
-        function()
-            awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
-        end
-    )
+    -- vol_slide:connect_signal("drag_start",
+    --     function()
+    --         is_dragging = true
+    --     end
+    -- )
 
-    vol_slide:connect_signal("button::press",
-        function()
-            if not is_dragging then
-                awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
-            end
-        end
-    )
+    -- vol_slide:connect_signal("drag",
+    --     function()
+    --         awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
+    --     end
+    -- )
 
-    vol_slide:connect_signal("drag_end",
-        function()
-            awful.spawn.easy_async_with_shell(
-                'LANG=C sleep 0.8 && echo',
-                function(stdout)
-                    is_dragging = false
-                end
-            )
-        end
-    )
+    -- vol_slide:connect_signal("button::press",
+    --     function()
+    --         if not is_dragging then
+    --             awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
+    --         end
+    --     end
+    -- )
+
+    -- vol_slide:connect_signal("drag_end",
+    --     function()
+    --         -- awful.spawn.easy_async_with_shell(
+    --         --     'LANG=C sleep 0.8 && echo',
+    --         --     function(stdout)
+    --                 is_dragging = false
+    --             -- end
+    --         -- )
+    --     end
+    -- )
+
     awesome.connect_signal(signal_name,
         function(volume, mute, active_port)
-            vol_slide.value = volume
+            vol_slide:set_value(volume)
             if mute == "no" then
-                vol_slide.bar_color = col_bg
-                vol_slide.bar_active_color = col_fg
-                vol_slide.handle_color = col_handle
+                vol_slide:set_bar_color(col_bg)
+                vol_slide:set_bar_active_color(col_fg)
+                vol_slide:set_handle_color(col_handle)
             elseif mute == "yes" then
-                vol_slide.bar_color = col_mute
-                vol_slide.bar_active_color = col_mute
-                vol_slide.handle_color = col_mute
+                vol_slide:set_bar_color(col_mute)
+                vol_slide:set_bar_active_color(col_mute)
+                vol_slide:set_handle_color(col_mute)
             end
             if active_port:find("internal") or active_port:find("analog") then
                 icon_widget.icon:set_image(icon_img.internal)
@@ -231,14 +239,15 @@ function sound.new(options)
         elseif operation == "-" then
             volume = math.max(0, volume - value)
         end
-        vol_slide.value = volume
-        awful.spawn.with_shell(set_vol_cmd .. volume .. '%')
-        awful.spawn.easy_async_with_shell(
-            'LANG=C sleep 0.8 && echo',
-            function(stdout)
-                is_dragging = false
-            end
-        )
+        vol_slide:set_value(volume)
+        -- awful.spawn.with_shell(set_vol_cmd .. volume .. '%')
+        -- awful.spawn.easy_async_with_shell(
+        --     'LANG=C sleep 0.8 && echo',
+            -- function(stdout)
+                -- is_dragging = false
+                -- volume = nil
+            -- end
+        -- )
     end
 
     vol_slide:buttons(awful.util.table.join(
@@ -280,6 +289,7 @@ function sound.new(options)
         elseif setting == "no" then
             setting = "yes"
         end
+        MUTED = setting
         awful.spawn.with_shell(set_mute_cmd .. setting)
     end
 
