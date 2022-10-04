@@ -1,6 +1,5 @@
 local sound = {}
 
-local naughty = require("naughty")
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
@@ -41,11 +40,17 @@ function sound.new(options)
     local device_type = options and options.device_type or "sink"
     local icon_img = options and options.icon_paths or {}
 
-    local CURRENT_ICO = ""
-    local MUTED = ""
+    local signal_state = {
+        signal_mute = -1,
+        signal_volume = -1,
+        signal_device = -1,
+        signal_port = -1
+    }
+
     local is_dragging = false
-    local DEFAULT_DEVICE = ""
-    local DEVICE_PORT = ""
+    local WIDGET_CURRENT_ICO = ""
+    local WIDGET_MUTED = ""
+    local WIDGET_PORT = ""
 
     local pulse_device = {}
     if device_type == "sink" then
@@ -54,7 +59,9 @@ function sound.new(options)
         pulse_device = { "source", "SOURCE", "Source" }
     end
 
-    local signal_name = string.format("volume::%s", device_type)
+    local signal_volume = string.format("sound::%s::volume", device_type)
+    local signal_mute = string.format("sound::%s::mute", device_type)
+    local signal_port = string.format("sound::%s::port", device_type)
     local get_default_device = string.format("pactl info")
     local match_default_device = string.format("Default %s", pulse_device[3])
     local set_vol_cmd  = string.format("pactl set-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
@@ -102,18 +109,17 @@ function sound.new(options)
     }
 
     -- callback that emits a signal
-    local function update_callback_signal(stdout)
-        local volume = vol_slide:get_value()
-        local mute = MUTED
-        local active_port = DEVICE_PORT
+    local function update_callback_signal(stdout, signal_state)
+        local updater_volume = signal_state.signal_volume
+        local updater_mute = signal_state.signal_mute
+        local updater_device = signal_state.signal_device
+        local updater_active_port = signal_state.signal_port
         local active = false
         local line = nil
-        -- naughty.notify({ text = signal_name .. ": " .. tostring(is_dragging) })
-        if not is_dragging then
             for line in stdout:gmatch("[^\n]+") do
                 local k, v = line:match("^%s*([^:]*): (.*)")
                 if k == "Name" then
-                    if v == DEFAULT_DEVICE then
+                    if v == updater_device then
                         active = true
                     else
                         active = false
@@ -122,66 +128,79 @@ function sound.new(options)
                 if active then
                     if k == "Volume" then
                         local percent = v:match("front.-([0-9]*)%%")
-                        volume = tonumber(percent) or 0
-                    elseif k == "Mute" then
-                            mute = v
-                    elseif k == "Active Port" then
-                        active_port = v
+                        updater_volume = tonumber(percent) or 0
+                    end
+                    if k == "Mute" then
+                        updater_mute = v
+                    end
+                    if k == "Active Port" then
+                        updater_active_port = v
                     end
                 end
             end
             line = nil
-            -- if (volume ~= vol_val) or (mute ~= MUTED) or (active_port ~= DEVICE_PORT) then
-                awesome.emit_signal(signal_name, volume, mute, active_port)
-                -- vol_val = volume
-                -- MUTED = mute
-                -- DEVICE_PORT = active_port
-            -- end
-        end
+            stdout = nil
+            if ( updater_volume ~= signal_state.signal_volume ) then
+                signal_state.signal_volume = updater_volume
+                awesome.emit_signal(signal_volume, signal_state.signal_volume )
+            end
+            updater_volume = nil
+            if ( updater_mute ~= signal_state.signal_mute ) then
+                signal_state.signal_mute = updater_mute
+                awesome.emit_signal(signal_mute, signal_state.signal_mute )
+            end
+            updater_mute = nil
+            if ( updater_active_port ~= signal_state.signal_port ) then
+                signal_state.signal_port = updater_active_port
+                awesome.emit_signal(signal_port, signal_state.signal_port )
+            end
+            updater_active_port = nil
     end
 
-    local function volume_info(cmd)
+    local function volume_info(cmd, signal_state)
         awful.spawn.easy_async_with_shell(
             'LANG=C ' .. get_default_device,
             function(stdout)
                 local line = nil
                 for line in stdout:gmatch("[^\n]+") do
                     local k, v = line:match("^%s*([^:]*): (.*)")
-                    if k == match_default_device then DEFAULT_DEVICE = v end
+                    if k == match_default_device then signal_state.signal_device = v end
                 end
                 line = nil
+                stdout = nil
                 awful.spawn.easy_async_with_shell(
                     'LANG=C ' .. cmd,
                     function(stdout)
-                        update_callback_signal(stdout)
+                        update_callback_signal(stdout, signal_state)
+                        stdout = nil
                     end
                 )
             end
         )
     end
 
-    --- update
-    -- gears.timer({
-    --         timeout = 2,
-    --         autostart = true,
-    --         callback = function()
-    --             volume_info(update_cmd)
-    --         end
-    --     })
-
     --- first update
-    volume_info(update_cmd)
+    volume_info(update_cmd, signal_state)
 
     local vol_daemon = string.format([[dash -c "LANG=C pactl --client-name=awesome-%s subscribe 2> /dev/null | grep --line-buffered \"Event 'change' on %s #\""]], pulse_device[1], pulse_device[1])
 
-    awful.spawn.with_line_callback(
-        vol_daemon,
-        {
-            stdout = function(line)
-                volume_info(update_cmd)
-            end
-        }
-    )
+    gears.timer { timeout = 5, autostart = true, call_now = false, single_shot = true, callback = function()
+        awful.spawn.easy_async(string.format("pkill -f 'pactl --client-name=awesome-%s subscribe'", pulse_device[1]), function()
+            awful.spawn.with_line_callback(
+                vol_daemon,
+                {
+                    stdout = function(line)
+                        if not is_dragging then
+                            volume_info(update_cmd, signal_state)
+                        end
+                        line = nil
+                    end
+                }
+            )
+        end
+        )
+    end
+    }
 
     awesome.connect_signal("exit",
         function()
@@ -200,15 +219,13 @@ function sound.new(options)
     vol_slide:connect_signal("property::value",
         function()
             if is_dragging then
-            local volume_level = vol_slide:get_value()
-            awful.spawn(set_vol_cmd .. volume_level .. "%", false)
-            if drag_state_end.started then
-                drag_state_end:again()
-            else
-                drag_state_end:start()
-            end
-            -- is_dragging = false
-            -- vol_slide:emit_signal("drag_end")
+                local volume_level = vol_slide:get_value()
+                awful.spawn(set_vol_cmd .. volume_level .. "%", false)
+                if drag_state_end.started then
+                    drag_state_end:again()
+                else
+                    drag_state_end:start()
+                end
             end
         end
     )
@@ -219,20 +236,6 @@ function sound.new(options)
         end
     )
 
-    -- vol_slide:connect_signal("drag",
-    --     function()
-    --         awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
-    --     end
-    -- )
-
-    -- vol_slide:connect_signal("button::press",
-    --     function()
-    --         if not is_dragging then
-    --             awful.spawn.with_shell(set_vol_cmd .. vol_slide.value .. '%')
-    --         end
-    --     end
-    -- )
-
     vol_slide:connect_signal("drag_end",
         function()
             if drag_state_end.started then
@@ -240,47 +243,52 @@ function sound.new(options)
             else
                 drag_state_end:start()
             end
-    --         -- awful.spawn.easy_async_with_shell(
-    --         --     'LANG=C sleep 0.8 && echo',
-    --         --     function(stdout)
-                    -- is_dragging = false
-    --             -- end
-    --         -- )
         end
     )
 
-    awesome.connect_signal(signal_name,
-        function(volume, mute, active_port)
-            if vol_slide:get_value() ~= volume then
-            vol_slide:set_value(volume)
+    awesome.connect_signal(signal_volume,
+        function(volume)
+            local widget_volue = vol_slide:get_value()
+            if volume ~= widget_volue then
+                vol_slide:set_value(volume)
             end
-            if mute == "no" then
-                vol_slide:set_bar_color(col_bg)
-                vol_slide:set_bar_active_color(col_fg)
-                vol_slide:set_handle_color(col_handle)
-            elseif mute == "yes" then
-                vol_slide:set_bar_color(col_mute)
-                vol_slide:set_bar_active_color(col_mute)
-                vol_slide:set_handle_color(col_mute)
-            end
-            if MUTED ~= mute then
-                MUTED = mute
-            end
-            if CURRENT_ICO ~= active_port then
-                CURRENT_ICO = active_port
-            if active_port:find("internal") or active_port:find("analog") then
-                icon_widget.icon:set_image(icon_img.internal)
-            else
-                icon_widget.icon:set_image(icon_img.external)
-            end
-            end
-            volume = nil
-            mute = nil
-            active_port = nil
-        end
-    )
+        end)
 
-    volume_widget.set_volume = function(self, operation, value)
+    awesome.connect_signal(signal_mute,
+        function(mute)
+            if mute ~= WIDGET_MUTED then
+                if mute == "no" then
+                    vol_slide:set_bar_color(col_bg)
+                    vol_slide:set_bar_active_color(col_fg)
+                    vol_slide:set_handle_color(col_handle)
+                elseif mute == "yes" then
+                    vol_slide:set_bar_color(col_mute)
+                    vol_slide:set_bar_active_color(col_mute)
+                    vol_slide:set_handle_color(col_mute)
+                end
+                WIDGET_MUTED = mute
+            end
+        end)
+
+    awesome.connect_signal(signal_port,
+        function(port)
+            if WIDGET_PORT ~= port then
+                if port:find("internal") or port:find("analog") then
+                    if icon_img.internal ~= WIDGET_CURRENT_ICO then
+                        icon_widget.icon:set_image(icon_img.internal)
+                        WIDGET_CURRENT_ICO = icon_img.internal
+                    end
+                else
+                    if icon_img.external ~= WIDGET_CURRENT_ICO then
+                        icon_widget.icon:set_image(icon_img.external)
+                        WIDGET_CURRENT_ICO = icon_img.external
+                    end
+                end
+                WIDGET_PORT = port
+            end
+        end)
+
+    function volume_widget.set_volume(self, operation, value)
         vol_slide:emit_signal("drag_start")
         local volume = vol_slide:get_value()
         if operation == "+" then
@@ -289,19 +297,11 @@ function sound.new(options)
             volume = math.max(0, volume - value)
         end
         vol_slide:set_value(volume)
-        -- awful.spawn.with_shell(set_vol_cmd .. volume .. '%')
-        -- awful.spawn.easy_async_with_shell(
-        --     'LANG=C sleep 0.8 && echo',
-            -- function(stdout)
-                -- is_dragging = false
-                -- volume = nil
-            -- end
-        -- )
     end
 
     vol_slide:buttons(awful.util.table.join(
-        awful.button({  }, 4, function() volume_widget:set_volume("+", 5) end),
-        awful.button({  }, 5, function() volume_widget:set_volume("-", 5) end)
+        awful.button({  }, 4, function() volume_widget:set_volume("+", 1) end),
+        awful.button({  }, 5, function() volume_widget:set_volume("-", 1) end)
     ))
 
     -- Hover thingy
@@ -331,15 +331,21 @@ function sound.new(options)
         end
     end)
 
-    volume_widget.toggle_mute = function(self)
-        local setting = MUTED
+    function volume_widget:toggle_mute(self)
+        is_dragging = true
+        local setting = WIDGET_MUTED
         if setting == "yes" then
             setting = "no"
         elseif setting == "no" then
             setting = "yes"
         end
-        MUTED = setting
         awful.spawn.with_shell(set_mute_cmd .. setting)
+        awesome.emit_signal(signal_mute, setting )
+        if drag_state_end.started then
+            drag_state_end:again()
+        else
+            drag_state_end:start()
+        end
     end
 
     icon_widget:buttons(awful.util.table.join(
