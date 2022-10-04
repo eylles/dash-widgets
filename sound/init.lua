@@ -141,18 +141,18 @@ function sound.new(options)
             line = nil
             stdout = nil
             if ( updater_volume ~= signal_state.signal_volume ) then
+                awesome.emit_signal(signal_volume, updater_volume )
                 signal_state.signal_volume = updater_volume
-                awesome.emit_signal(signal_volume, signal_state.signal_volume )
             end
             updater_volume = nil
             if ( updater_mute ~= signal_state.signal_mute ) then
+                awesome.emit_signal(signal_mute, updater_mute )
                 signal_state.signal_mute = updater_mute
-                awesome.emit_signal(signal_mute, signal_state.signal_mute )
             end
             updater_mute = nil
             if ( updater_active_port ~= signal_state.signal_port ) then
+                awesome.emit_signal(signal_port, updater_active_port )
                 signal_state.signal_port = updater_active_port
-                awesome.emit_signal(signal_port, signal_state.signal_port )
             end
             updater_active_port = nil
     end
