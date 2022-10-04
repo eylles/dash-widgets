@@ -252,6 +252,7 @@ function sound.new(options)
             if volume ~= widget_volue then
                 vol_slide:set_value(volume)
             end
+            volume = nil
         end)
 
     awesome.connect_signal(signal_mute,
@@ -268,6 +269,7 @@ function sound.new(options)
                 end
                 WIDGET_MUTED = mute
             end
+            mute = nil
         end)
 
     awesome.connect_signal(signal_port,
@@ -286,10 +288,11 @@ function sound.new(options)
                 end
                 WIDGET_PORT = port
             end
+            port = nil
         end)
 
     function volume_widget.set_volume(self, operation, value)
-        vol_slide:emit_signal("drag_start")
+        is_dragging = true
         local volume = vol_slide:get_value()
         if operation == "+" then
             volume = math.min(volume + value, 100)
@@ -297,11 +300,12 @@ function sound.new(options)
             volume = math.max(0, volume - value)
         end
         vol_slide:set_value(volume)
+        volume = nil
     end
 
     vol_slide:buttons(awful.util.table.join(
-        awful.button({  }, 4, function() volume_widget:set_volume("+", 5) end),
-        awful.button({  }, 5, function() volume_widget:set_volume("-", 5) end)
+        awful.button({  }, 4, function() volume_widget:set_volume("+", 1) end),
+        awful.button({  }, 5, function() volume_widget:set_volume("-", 1) end)
     ))
 
     -- Hover thingy
@@ -332,7 +336,7 @@ function sound.new(options)
     end)
 
     function volume_widget:toggle_mute(self)
-        vol_slide:emit_signal("drag_start")
+        is_dragging = true
         local setting = WIDGET_MUTED
         if setting == "yes" then
             setting = "no"
@@ -341,6 +345,7 @@ function sound.new(options)
         end
         awful.spawn.with_shell(set_mute_cmd .. setting, false)
         awesome.emit_signal(signal_mute, setting )
+        setting = nil
         if drag_state_end.started then
             drag_state_end:again()
         else
