@@ -51,6 +51,7 @@ function sound.new(options)
     local WIDGET_CURRENT_ICO = ""
     local WIDGET_MUTED = ""
     local WIDGET_PORT = ""
+    local running = ""
 
     local pulse_device = {}
     if device_type == "sink" then
@@ -155,9 +156,14 @@ function sound.new(options)
                 signal_state.signal_port = updater_active_port
             end
             updater_active_port = nil
+            running = false
     end
 
     local function volume_info(cmd, signal_state)
+        if running == true then
+            return
+        end
+        running = true
         awful.spawn.easy_async_with_shell(
             'LANG=C ' .. get_default_device,
             function(stdout)
@@ -190,9 +196,7 @@ function sound.new(options)
                 vol_daemon,
                 {
                     stdout = function(line)
-                        if not is_dragging then
                             volume_info(update_cmd, signal_state)
-                        end
                         line = nil
                     end
                 }
@@ -213,6 +217,7 @@ function sound.new(options)
             -- autostart = true,
             callback = function()
                 is_dragging = false
+                running = false
             end
         })
 
@@ -233,6 +238,7 @@ function sound.new(options)
     vol_slide:connect_signal("drag_start",
         function()
             is_dragging = true
+            running = true
         end
     )
 
