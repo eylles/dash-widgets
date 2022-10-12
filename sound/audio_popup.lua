@@ -5,7 +5,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local dpi = require("beautiful.xresources").apply_dpi
 
-local audio_controller = require("utils.audio"):new {}
+local audio_controller = require("utils_audio"):new {}
 
 local Audio_popup = {
     mt = {}
@@ -34,27 +34,27 @@ function Audio_popup:new()
         forced_height = dpi(10),
         shape = gears.shape.rounded_rect,
 
-        color = beautiful.colors.light_purple,
-        background_color = beautiful.colors.bg2,
+        color = beautiful.color15,
+        background_color = beautiful.bg_normal,
     }
 
     local icon_text = wibox.widget {
         widget = wibox.widget.textbox,
         align = "center",
-        font = "MesloLGS NF Bold 64",
+        font = "BlexMono NF 64",
         markup = " 墳 ",
     }
 
     local audio_text = wibox.widget {
         widget = wibox.widget.textbox,
-        font = "MesloLGS NF Bold 12",
+        font = "IBM Plex Sans 12",
         align = "center",
     }
 
     local popup = awful.popup {
         widget = {
             widget = wibox.container.background,
-            bg = beautiful.colors.bg1 .. "aa",
+            bg = beautiful.bg_normal .. "aa",
             forced_width = dpi(220),
             {
                 widget = wibox.container.margin,

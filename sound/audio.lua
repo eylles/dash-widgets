@@ -1,6 +1,6 @@
 local wibox = require("wibox")
 local naughty = require("naughty")
-local audio_controller = require("utils.audio")
+local audio_controller = require("utils_audio")
 local inspect = require("inspect")
 
 local Audio = {}
