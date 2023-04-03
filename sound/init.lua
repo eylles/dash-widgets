@@ -51,7 +51,7 @@ function sound.new(options)
     local WIDGET_CURRENT_ICO = ""
     local WIDGET_MUTED = ""
     local WIDGET_PORT = ""
-    local running = ""
+    local running = false
 
     local pulse_device = {}
     if device_type == "sink" then
@@ -116,7 +116,6 @@ function sound.new(options)
         local updater_device = signal_state.signal_device
         local updater_active_port = signal_state.signal_port
         local active = false
-        local line = nil
             for line in stdout:gmatch("[^\n]+") do
                 local k, v = line:match("^%s*([^:]*): (.*)")
                 if k == "Name" then
@@ -128,7 +127,7 @@ function sound.new(options)
                 end
                 if active then
                     if k == "Volume" then
-                        local percent = v:match("front.-([0-9]*)%%")
+                        local percent = v:match("[a-z]+.-([0-9]*)%%")
                         updater_volume = tonumber(percent) or 0
                     end
                     if k == "Mute" then
@@ -138,8 +137,8 @@ function sound.new(options)
                         updater_active_port = v
                     end
                 end
+                line = nil
             end
-            line = nil
             stdout = nil
             if ( updater_volume ~= signal_state.signal_volume ) then
                 awesome.emit_signal(signal_volume, updater_volume )
@@ -167,12 +166,11 @@ function sound.new(options)
         awful.spawn.easy_async_with_shell(
             'LANG=C ' .. get_default_device,
             function(stdout)
-                local line = nil
                 for line in stdout:gmatch("[^\n]+") do
                     local k, v = line:match("^%s*([^:]*): (.*)")
                     if k == match_default_device then signal_state.signal_device = v end
+                    line = nil
                 end
-                line = nil
                 stdout = nil
                 awful.spawn.easy_async_with_shell(
                     'LANG=C ' .. cmd,
