@@ -295,7 +295,7 @@ function sound.new(options)
             port = nil
         end)
 
-    function volume_widget.set_volume(self, operation, value)
+    volume_widget.set_volume = function (self, operation, value)
         is_dragging = true
         local volume = vol_slide:get_value()
         if operation == "+" then
@@ -339,7 +339,7 @@ function sound.new(options)
         end
     end)
 
-    function volume_widget:toggle_mute(self)
+    volume_widget.toggle_mute = function (self)
         is_dragging = true
         local setting = WIDGET_MUTED
         if setting == "yes" then
