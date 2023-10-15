@@ -212,6 +212,7 @@ function sound.new(options)
 
     local drag_state_end = gears.timer({
             timeout = 2,
+            single_shot = true,
             -- autostart = true,
             callback = function()
                 is_dragging = false
