@@ -1,0 +1,45 @@
+#!/bin/sh
+
+cont=0
+
+main () {
+    CURR=0
+    while [ "$cont" -eq 0 ]; do
+        MAX_FIND=0
+        for w in $(xprop -notype -root _NET_CLIENT_LIST 2>/dev/null | cut -d'#' -f2 | tr ',' '\n' | awk '{print $1}'); do 
+            if [ "$(xprop -id "$w" -notype _NET_WM_DESKTOP 2>/dev/null | cut -d' ' -f3)" -eq "$(xprop -root -notype _NET_CURRENT_DESKTOP 2>/dev/null | cut -d' ' -f3)" ]; then
+                if xprop -id "$w" _NET_WM_STATE | grep -E "MAXIMIZED_HORZ.*MAXIMIZED_VERT|MAXIMIZED_VERT.*MAXIMIZED_HORZ" > /dev/null 2>&1; then
+                    if xprop -id "$w" WM_STATE | grep -E "window state: Normal" > /dev/null 2>&1; then
+                        MAX_FIND=1
+                        break
+                    fi
+                fi
+            fi
+        done
+
+        if [ $MAX_FIND -eq 1 ] && [ $CURR -eq 0 ]; then
+            awesome-client 'awesome.emit_signal("bar::max",true)'
+            CURR=1			
+        elif [ $MAX_FIND -eq 0 ] && [ $CURR -eq 1 ]; then
+            awesome-client 'awesome.emit_signal("bar::max",false)'
+            CURR=0
+        fi
+        sleep 0.2
+    done
+    exit 0
+}
+
+sig_handler () {
+    cont=1
+}
+
+cleanup () {
+    awesome-client 'awesome.emit_signal("bar::max",false)'
+}
+
+trap 'sig_handler' INT TERM HUP
+
+trap 'cleanup' EXIT
+
+main > /dev/null 2>&1
+
