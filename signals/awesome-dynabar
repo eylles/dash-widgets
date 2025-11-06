@@ -1,5 +1,7 @@
 #!/bin/sh
 
+awesome-client 'awesome.emit_signal("bar::max",false)'
+
 cont=0
 
 main () {
