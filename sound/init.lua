@@ -37,6 +37,7 @@ function sound.new(options)
     local col_fg_darker = mix(col_fg, "#000000", 0.4)
     local col_bg = options and options.col_bg or col_fg_darker or "#006666"
     local bar_height = options and options.bar_height or 5
+    local bar_shape  = options and options.bar_shape or gears.shape.rounded_bar
     local device_type = options and options.device_type or "sink"
     local icon_img = options and options.icon_paths or {}
 
@@ -75,7 +76,7 @@ function sound.new(options)
         value = 0,
         background_color = col_bg,
         bar_color = col_bg,
-        bar_shape = gears.shape.rounded_bar,
+        bar_shape = bar_shape,
         bar_height = bar_height,
         bar_active_color = col_fg,
         handle_color = col_handle,

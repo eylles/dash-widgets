@@ -33,6 +33,7 @@ release feel welcome to do so.
 | `col_bg`[1]     | the background color of the bar,                                   | string (hex) | "#006666"     |
 | `col_handle`[2] | the color of the handle when not mute                              | string (hex) | "#ffffff"     |
 | `bar_height`    | the height of the slider bar                                       | integer      | 5             |
+| `bar_height`    | the shape of the slider bar                                       | gears.shape object | gears.shape.rounded_bar |
 | `device_type`   | the type of pulse device to control (sink or source)               | string       | "sink"        |
 | `icon_img`      | table that contains the height, internal and external icon (paths) | table        | nil           |
 
