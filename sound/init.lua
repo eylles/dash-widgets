@@ -157,6 +157,7 @@ function sound.new(options)
             end
             updater_active_port = nil
             running = false
+            collectgarbage("collect")
     end
 
     local function volume_info(cmd, signal_state)
@@ -180,6 +181,7 @@ function sound.new(options)
                         stdout = nil
                     end
                 )
+                collectgarbage("collect")
             end
         )
     end
@@ -197,6 +199,7 @@ function sound.new(options)
                     stdout = function(line)
                             volume_info(update_cmd, signal_state)
                         line = nil
+                        collectgarbage("collect")
                     end
                 }
             )
@@ -259,6 +262,7 @@ function sound.new(options)
                 vol_slide:set_value(volume)
             end
             volume = nil
+            collectgarbage("collect")
         end)
 
     awesome.connect_signal(signal_mute,
@@ -276,6 +280,7 @@ function sound.new(options)
                 WIDGET_MUTED = mute
             end
             mute = nil
+            collectgarbage("collect")
         end)
 
     awesome.connect_signal(signal_port,
@@ -295,6 +300,7 @@ function sound.new(options)
                 WIDGET_PORT = port
             end
             port = nil
+            collectgarbage("collect")
         end)
 
     volume_widget.set_volume = function (self, operation, value)
@@ -307,6 +313,7 @@ function sound.new(options)
         end
         vol_slide:set_value(volume)
         volume = nil
+        collectgarbage("collect")
     end
 
     vol_slide:buttons(awful.util.table.join(
@@ -325,6 +332,7 @@ function sound.new(options)
         if old_wibox then
             old_wibox.cursor = old_cursor
             old_wibox = nil
+            collectgarbage("collect")
         end
     end)
 
@@ -338,6 +346,7 @@ function sound.new(options)
         if old_wibox then
             old_wibox.cursor = old_cursor
             old_wibox = nil
+            collectgarbage("collect")
         end
     end)
 
@@ -352,6 +361,7 @@ function sound.new(options)
         awful.spawn.with_shell(set_mute_cmd .. setting, false)
         awesome.emit_signal(signal_mute, setting )
         setting = nil
+        collectgarbage("collect")
         if drag_state_end.started then
             drag_state_end:again()
         else
