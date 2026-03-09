@@ -1,0 +1,37 @@
+#!/bin/sh
+
+export LANG=C
+
+# either on or off
+CAPS=""
+# either on or off
+NUMS=""
+
+ledcaps="leds::capslock"
+lednums="leds::numlock"
+
+sig_handler () {
+    cont=1
+}
+
+get_leds () {
+    # xset q | awk '/00: Caps Lock:/ { print "CAPS=" $4 "::""NUMS=" $8 }'
+    xset q | awk '/00: Caps Lock:/ { print $4 "::" $8 }'
+}
+
+cont=0
+
+main () {
+    while [ "$cont" -eq 0 ]; do
+        LEDS="$(get_leds)"
+        CAPS="${LEDS%%::*}"
+        NUMS="${LEDS##*::}"
+        awesome-client "awesome.emit_signal('$ledcaps','$CAPS')"
+        awesome-client "awesome.emit_signal('$lednums','$NUMS')"
+        sleep 0.4
+    done
+}
+
+trap 'sig_handler' INT TERM HUP
+
+main > /dev/null 2>&1
