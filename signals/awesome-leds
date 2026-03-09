@@ -4,8 +4,10 @@ export LANG=C
 
 # either on or off
 CAPS=""
+caps_old=""
 # either on or off
 NUMS=""
+nums_old=""
 
 ledcaps="leds::capslock"
 lednums="leds::numlock"
@@ -26,8 +28,14 @@ main () {
         LEDS="$(get_leds)"
         CAPS="${LEDS%%::*}"
         NUMS="${LEDS##*::}"
-        awesome-client "awesome.emit_signal('$ledcaps','$CAPS')"
-        awesome-client "awesome.emit_signal('$lednums','$NUMS')"
+        if [ "$CAPS" != "$caps_old" ]; then
+            awesome-client "awesome.emit_signal('$ledcaps','$CAPS')"
+        fi
+        if [ "$NUMS" != "$nums_old" ]; then
+            awesome-client "awesome.emit_signal('$lednums','$NUMS')"
+        fi
+        caps_old="$CAPS"
+        nums_old="$NUMS"
         sleep 0.4
     done
 }
