@@ -26,9 +26,8 @@ main () {
             awesome-client 'awesome.emit_signal("bar::max",false)'
             CURR=0
         fi
-        sleep 0.2
+        sleep 0.250
     done
-    exit 0
 }
 
 sig_handler () {
