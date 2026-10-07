@@ -9,6 +9,14 @@ local numslock = wibox.widget {
   forced_width = 15,
 }
 
+numslock:buttons(
+    awful.util.table.join(
+        awful.button({}, 1, function()
+            awful.spawn.with_shell("xdotool key Num_Lock")
+        end)
+    )
+)
+
 numslock.activated = "<b><span foreground="darkgray">9</span></b>"
 numslock.deactivated = "<b><span foreground="white">9</span></b>"
 

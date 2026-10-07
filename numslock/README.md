@@ -2,9 +2,12 @@
 
 This is a numslock widget that provides an indicator for the state of the numslock key.
 
+The widget is clickable and will toggle the nums lock state when you click on it.
+
 # requirements
 
-This depends on xset
+This depends on xset to read the nusmlock status with the leds signal and on xdotool to toggle the
+nusmlock status on click.
 
 # Usage
 
@@ -46,3 +49,4 @@ s.mywibox:setup {
 # Notes
 
 This widget inspired by [awesome-capslock_widget](https://github.com/stefano-m/awesome-capslock_widget)
+but currently follows the capslock widget from this very repo.
