@@ -2,9 +2,12 @@
 
 This is a capslock widget that provides an indicator for the state of the capslock key.
 
+The widget is clickable and will toggle the caps lock state when you click on it.
+
 # requirements
 
-This depends on xset
+This depends on xset to read the capslock status with the leds signal and on xdotool to toggle the
+casplock status on click.
 
 # Usage
 

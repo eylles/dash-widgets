@@ -9,6 +9,14 @@ local capslock = wibox.widget {
   forced_width = 15,
 }
 
+capslock:buttons(
+    awful.util.table.join(
+        awful.button({}, 1, function()
+            awful.spawn.with_shell("xdotool key Caps_Lock")
+        end)
+    )
+)
+
 capslock.activated = "<b>A</b>"
 capslock.deactivated = "<b>a</b>"
 
