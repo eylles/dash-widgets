@@ -20,6 +20,8 @@ numslock.activated = "<b>9</b>"
 numslock.deactivated = "<span foreground="purple">9</span>"
 -- the width of the textbox is configurable too
 numslock.forced_width = 30
+-- by default click to toggle is deactivated, set this up to activate it
+capslock.click_to_toggle = true
 
 
 -- LEDS signal from awesome-leds

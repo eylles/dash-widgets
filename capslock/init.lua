@@ -9,10 +9,14 @@ local capslock = wibox.widget {
   forced_width = 15,
 }
 
+capslock.click_to_toggle = false
+
 capslock:buttons(
     awful.util.table.join(
         awful.button({}, 1, function()
-            awful.spawn.with_shell("xdotool key Caps_Lock")
+            if capslock.click_to_toggle then
+                awful.spawn.with_shell("xdotool key Caps_Lock")
+            end
         end)
     )
 )

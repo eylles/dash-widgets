@@ -9,10 +9,14 @@ local numslock = wibox.widget {
   forced_width = 15,
 }
 
+numslock.click_to_toggle = false
+
 numslock:buttons(
     awful.util.table.join(
         awful.button({}, 1, function()
-            awful.spawn.with_shell("xdotool key Num_Lock")
+            if numslock.click_to_toggle then
+                awful.spawn.with_shell("xdotool key Num_Lock")
+            end
         end)
     )
 )
