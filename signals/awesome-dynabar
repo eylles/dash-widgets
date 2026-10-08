@@ -5,9 +5,6 @@ awesome-client 'awesome.emit_signal("bar::max",false)'
 cont=0
 
 c=200
-r=$(shuf -i 1-100 -n 1)
-d=$(( c + r ))
-time="0.${d}"
 
 main () {
     CURR=0
@@ -31,6 +28,9 @@ main () {
             awesome-client 'awesome.emit_signal("bar::max",false)'
             CURR=0
         fi
+        r=$(shuf -i 1-100 -n 1)
+        d=$(( c + r ))
+        time="0.${d}"
         sleep "$time"
     done
 }
