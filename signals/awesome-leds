@@ -10,7 +10,7 @@ NUMS=""
 nums_old=""
 
 ledcaps="leds::capslock"
-lednums="leds::numlock"
+lednums="leds::numslock"
 
 sig_handler () {
     cont=1
