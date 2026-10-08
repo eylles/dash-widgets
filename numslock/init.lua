@@ -21,8 +21,8 @@ numslock:buttons(
     )
 )
 
-numslock.activated = "<b><span foreground="darkgray">9</span></b>"
-numslock.deactivated = "<b><span foreground="white">9</span></b>"
+numslock.activated = "<b>9</b>"
+numslock.deactivated = "9"
 
 local tooltip = awful.tooltip({})
 
