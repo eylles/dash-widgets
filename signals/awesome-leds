@@ -23,7 +23,7 @@ get_leds () {
 
 cont=0
 
-c=200
+c=225
 
 main () {
     while [ "$cont" -eq 0 ]; do
@@ -38,7 +38,7 @@ main () {
         fi
         caps_old="$CAPS"
         nums_old="$NUMS"
-        r=$(shuf -i 1-100 -n 1)
+        r=$(shuf -i 10-100 -n 1)
         d=$(( c + r ))
         time="0.${d}"
         sleep "$time"
