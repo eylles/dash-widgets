@@ -257,6 +257,7 @@ function sound.new(options)
 
     awesome.connect_signal(signal_volume,
         function(volume)
+            volume = tonumber(volume) or 0
             local widget_volue = vol_slide:get_value()
             if volume ~= widget_volue then
                 vol_slide:set_value(volume)
