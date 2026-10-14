@@ -1,0 +1,131 @@
+#!/bin/sh
+export LANG=C
+
+# Signals to emit inside AwesomeWM
+
+# sound::sink::volume
+SIG_VOL_SINK="sound::sink::volume"
+# sound::sink::mute
+SIG_MUTE_SINK="sound::sink::mute"
+# sound::sink::port
+SIG_PORT_SINK="sound::sink::port"
+
+# sound::source::volume
+SIG_VOL_SOURCE="sound::source::volume"
+# sound::source::mute
+SIG_MUTE_SOURCE="sound::source::mute"
+# sound::source::port
+SIG_PORT_SOURCE="sound::source::port"
+
+# State trackers to avoid redundant transmissions
+
+last_sink_vol=""
+last_sink_mute=""
+last_sink_port=""
+last_source_vol=""
+last_source_mute=""
+last_source_port=""
+
+# kill other instances if they exist
+pkill --full 'pactl --client-name=awesome-sound subscribe' 2>/dev/null
+
+send_awesome_signal() {
+    awesome-client "awesome.emit_signal('$1', '$2')" >/dev/null 2>&1
+    # printf '%s\n' "emitting '$1' with value '$2'"
+}
+
+get_def_dev() {
+    pactl info | awk -F': ' -v m="Default $1" '$1 == m {print $2}'
+}
+
+# Queries and streams changes for a device type (sink or source)
+update_device_state() {
+    type="$1"       # "sink" or "source"
+    match_type="$2" # "Sink" or "Source"
+
+    # Get current default device name
+    def_dev=$(get_def_dev "$match_type")
+    [ -z "$def_dev" ] && return
+
+    # Parse specific device characteristics
+    in_device=0
+    cur_vol=""
+    cur_mute=""
+    cur_port=""
+
+    pactl list "${type}s" | {
+        while read -r line; do
+            case "$line" in
+                Name:*)
+                    if [ "${line#*: }" = "$def_dev" ]; then
+                        in_device=1
+                    else
+                        in_device=0
+                    fi
+                    ;;
+            esac
+
+            if [ "$in_device" -eq 1 ]; then
+                case "$line" in
+                    "Volume:"*)
+                        cur_vol=$(echo "$line" | grep -oE '[0-9]+%' | head -n1 | tr -d '%')
+                        ;;
+                    "Mute:"*)
+                        cur_mute=${line#*: }
+                        ;;
+                    "Active Port:"*)
+                        cur_port=${line#*: }
+                        ;;
+                esac
+            fi
+        done
+
+        # Conditionally emit changed values
+        if [ "$type" = "sink" ]; then
+            if [ "$cur_vol" != "$last_sink_vol" ] && [ ! -z "$cur_vol" ]; then
+                send_awesome_signal "$SIG_VOL_SINK" "$cur_vol"
+                last_sink_vol="$cur_vol"
+            fi
+            if [ "$cur_mute" != "$last_sink_mute" ] && [ ! -z "$cur_mute" ]; then
+                send_awesome_signal "$SIG_MUTE_SINK" "$cur_mute"
+                last_sink_mute="$cur_mute"
+            fi
+            if [ "$cur_port" != "$last_sink_port" ] && [ ! -z "$cur_port" ]; then
+                send_awesome_signal "$SIG_PORT_SINK" "$cur_port"
+                last_sink_port="$cur_port"
+            fi
+        elif [ "$type" = "source" ]; then
+            if [ "$cur_vol" != "$last_source_vol" ] && [ ! -z "$cur_vol" ]; then
+                send_awesome_signal "$SIG_VOL_SOURCE" "$cur_vol"
+                last_source_vol="$cur_vol"
+            fi
+            if [ "$cur_mute" != "$last_source_mute" ] && [ ! -z "$cur_mute" ]; then
+                send_awesome_signal "$SIG_MUTE_SOURCE" "$cur_mute"
+                last_source_mute="$cur_mute"
+            fi
+            if [ "$cur_port" != "$last_source_port" ] && [ ! -z "$cur_port" ]; then
+                send_awesome_signal "$SIG_PORT_SOURCE" "$cur_port"
+                last_source_port="$cur_port"
+            fi
+        fi
+    }
+}
+
+update_all() {
+    update_device_state "sink" "Sink"
+    update_device_state "source" "Source"
+}
+
+main() {
+    pactl --client-name=awesome-sound subscribe 2>/dev/null | \
+    grep --line-buffered -E "Event 'change' on (sink|source) #" | \
+    while read -r event; do
+        printf '%s\n' "$event"
+        update_all
+    done
+}
+
+# Run an initial bootstrap pass
+update_all
+
+main >/dev/null 2>&1
