@@ -51,6 +51,9 @@ define your dashboard wibox)
 ```lua
 -- define this before your dashboard wibox
 
+-- sound signal from awesome-sound
+require("dash-widgets.signals.sound")
+
 -- volume
 local sound = require("dash-widgets.sound")
 -- i'm using icons from a local theme which is just recolored papirus
