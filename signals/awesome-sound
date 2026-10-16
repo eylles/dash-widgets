@@ -26,8 +26,10 @@ last_source_vol=""
 last_source_mute=""
 last_source_port=""
 
+client_name="awesome-sound-id-${XDG_SESSION_ID}"
+
 # kill other instances if they exist
-pkill --full 'pactl --client-name=awesome-sound subscribe' 2>/dev/null
+pkill --full "pactl --client-name=$client_name subscribe" 2>/dev/null
 
 send_awesome_signal() {
     awesome-client "awesome.emit_signal('$1', '$2')" >/dev/null 2>&1
@@ -117,7 +119,7 @@ update_all() {
 }
 
 main() {
-    pactl --client-name=awesome-sound subscribe 2>/dev/null | \
+    pactl --client-name="$client_name" subscribe 2>/dev/null | \
     grep --line-buffered -E "Event 'change' on (sink|source) #" | \
     while read -r event; do
         printf '%s\n' "$event"
