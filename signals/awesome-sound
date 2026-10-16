@@ -37,16 +37,15 @@ send_awesome_signal() {
 }
 
 get_def_dev() {
-    pactl info | awk -F': ' -v m="Default $1" '$1 == m {print $2}'
+    pactl "get-default-${1}"
 }
 
 # Queries and streams changes for a device type (sink or source)
 update_device_state() {
     type="$1"       # "sink" or "source"
-    match_type="$2" # "Sink" or "Source"
 
     # Get current default device name
-    def_dev=$(get_def_dev "$match_type")
+    def_dev=$(get_def_dev "$type")
     [ -z "$def_dev" ] && return
 
     # Parse specific device characteristics
@@ -114,8 +113,8 @@ update_device_state() {
 }
 
 update_all() {
-    update_device_state "sink" "Sink"
-    update_device_state "source" "Source"
+    update_device_state "sink"
+    update_device_state "source"
 }
 
 main() {
