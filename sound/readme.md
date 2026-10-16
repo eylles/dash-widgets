@@ -16,11 +16,8 @@ those is the default (ie when the default sink is on a bluetooth device change t
 
 # requirements
 
-the main requirement is `pactl` (pulseaudio-utils package in debian), which i reccomed to be at
-least version 14.2 (since i have not tested in older versions), for pulseaudio version 14.2 is
-encouraged (unless someone wants to test in an older release), for pipewire i cannot dictate any
-version since i just recently switched to it and i'm in 0.3.43, so anyone who wants to test an older
-release feel welcome to do so.
+The main requirements are `pactl` (pulseaudio-utils package in debian), and gnu `grep`, the minimum
+version of `pactl` supported is 14.99, for refference pactl is on version 17 in as of debian 13.
 
 # configuration
 
@@ -33,7 +30,7 @@ release feel welcome to do so.
 | `col_bg`[1]     | the background color of the bar,                                   | string (hex) | "#006666"     |
 | `col_handle`[2] | the color of the handle when not mute                              | string (hex) | "#ffffff"     |
 | `bar_height`    | the height of the slider bar                                       | integer      | 5             |
-| `bar_height`    | the shape of the slider bar                                       | gears.shape object | gears.shape.rounded_bar |
+| `bar_shape`     | the shape of the slider bar                                        | gears.shape object | gears.shape.rounded_bar |
 | `device_type`   | the type of pulse device to control (sink or source)               | string       | "sink"        |
 | `icon_img`      | table that contains the height, internal and external icon (paths) | table        | nil           |
 
