@@ -19,12 +19,12 @@ SIG_PORT_SOURCE="sound::source::port"
 
 # State trackers to avoid redundant transmissions
 
-last_sink_vol=""
-last_sink_mute=""
-last_sink_port=""
-last_source_vol=""
-last_source_mute=""
-last_source_port=""
+SINK_VOL=""
+SINK_MUTE=""
+SINK_PORT=""
+SOURCE_VOL=""
+SOURCE_MUTE=""
+SOURCE_PORT=""
 
 client_name="awesome-sound-id-${XDG_SESSION_ID}"
 
@@ -83,30 +83,30 @@ update_device_state() {
 
         # Conditionally emit changed values
         if [ "$type" = "sink" ]; then
-            if [ "$cur_vol" != "$last_sink_vol" ] && [ ! -z "$cur_vol" ]; then
+            if [ "$cur_vol" != "$SINK_VOL" ] && [ ! -z "$cur_vol" ]; then
                 send_awesome_signal "$SIG_VOL_SINK" "$cur_vol"
-                last_sink_vol="$cur_vol"
+                SINK_VOL="$cur_vol"
             fi
-            if [ "$cur_mute" != "$last_sink_mute" ] && [ ! -z "$cur_mute" ]; then
+            if [ "$cur_mute" != "$SINK_MUTE" ] && [ ! -z "$cur_mute" ]; then
                 send_awesome_signal "$SIG_MUTE_SINK" "$cur_mute"
-                last_sink_mute="$cur_mute"
+                SINK_MUTE="$cur_mute"
             fi
-            if [ "$cur_port" != "$last_sink_port" ] && [ ! -z "$cur_port" ]; then
+            if [ "$cur_port" != "$SINK_PORT" ] && [ ! -z "$cur_port" ]; then
                 send_awesome_signal "$SIG_PORT_SINK" "$cur_port"
-                last_sink_port="$cur_port"
+                SINK_PORT="$cur_port"
             fi
         elif [ "$type" = "source" ]; then
-            if [ "$cur_vol" != "$last_source_vol" ] && [ ! -z "$cur_vol" ]; then
+            if [ "$cur_vol" != "$SOURCE_VOL" ] && [ ! -z "$cur_vol" ]; then
                 send_awesome_signal "$SIG_VOL_SOURCE" "$cur_vol"
-                last_source_vol="$cur_vol"
+                SOURCE_VOL="$cur_vol"
             fi
-            if [ "$cur_mute" != "$last_source_mute" ] && [ ! -z "$cur_mute" ]; then
+            if [ "$cur_mute" != "$SOURCE_MUTE" ] && [ ! -z "$cur_mute" ]; then
                 send_awesome_signal "$SIG_MUTE_SOURCE" "$cur_mute"
-                last_source_mute="$cur_mute"
+                SOURCE_MUTE="$cur_mute"
             fi
-            if [ "$cur_port" != "$last_source_port" ] && [ ! -z "$cur_port" ]; then
+            if [ "$cur_port" != "$SOURCE_PORT" ] && [ ! -z "$cur_port" ]; then
                 send_awesome_signal "$SIG_PORT_SOURCE" "$cur_port"
-                last_source_port="$cur_port"
+                SOURCE_PORT="$cur_port"
             fi
         fi
     }
