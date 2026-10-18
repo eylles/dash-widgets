@@ -51,12 +51,12 @@ get_def_dev() {
 
 write_state_vars() {
     {
-        printf '%=%s\n' 'SINK_VOL'    "$SINK_VOL"
-        printf '%=%s\n' 'SINK_MUTE'   "$SINK_MUTE"
-        printf '%=%s\n' 'SINK_PORT'   "$SINK_PORT"
-        printf '%=%s\n' 'SOURCE_VOL'  "$SOURCE_VOL"
-        printf '%=%s\n' 'SOURCE_MUTE' "$SOURCE_MUTE"
-        printf '%=%s\n' 'SOURCE_PORT' "$SOURCE_PORT"
+        printf '%s=%s\n' 'SINK_VOL'    "$SINK_VOL"
+        printf '%s=%s\n' 'SINK_MUTE'   "$SINK_MUTE"
+        printf '%s=%s\n' 'SINK_PORT'   "$SINK_PORT"
+        printf '%s=%s\n' 'SOURCE_VOL'  "$SOURCE_VOL"
+        printf '%s=%s\n' 'SOURCE_MUTE' "$SOURCE_MUTE"
+        printf '%s=%s\n' 'SOURCE_PORT' "$SOURCE_PORT"
     } > "$STATE_FILE"
 }
 
