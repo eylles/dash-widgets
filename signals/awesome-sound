@@ -26,6 +26,15 @@ SOURCE_VOL=""
 SOURCE_MUTE=""
 SOURCE_PORT=""
 
+STATE_DIR="${XDG_RUNTIME_DIR}/awesome/sound"
+STATE_FILE="${STATE_DIR}/${XDG_SESSION_ID}.status"
+
+if [ ! -d "$STATE_DIR" ]; then
+    mkdir -p "$STATE_DIR"
+fi
+
+: > "$STATE_FILE"
+
 client_name="awesome-sound-id-${XDG_SESSION_ID}"
 
 # kill other instances if they exist
