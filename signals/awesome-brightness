@@ -2,8 +2,8 @@
 
 export LANG=C
 
-brightness_current=""
-brightness_old=""
+brightness_current=0
+brightness_old=0
 
 brightness_signal="brightness::level"
 
