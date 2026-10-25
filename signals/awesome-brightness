@@ -1,0 +1,38 @@
+#!/bin/sh
+
+export LANG=C
+
+brightness_current=""
+brightness_old=""
+
+brightness_signal="brightness::level"
+
+cont=0
+
+milisecs=500
+jitter_range="15-350"
+
+sig_handler () {
+    cont=1
+}
+
+get_brightness() {
+    blight "g"
+}
+
+main() {
+    while [ "$cont" -eq 0 ]; do
+        brightness_current=$(get_brightness)
+        if [ "$brightness_old" -ne "$brightness_current" ]; then
+            awesome-client "awesome.emit_signal('$brightness_signal','$brightness_current')"
+            brightness_old="$brightness_current"
+        fi
+        jitter=$(shuf -i "$jitter_range" -n 1)
+        milis=$((milisecs + jitter))
+        sleep "0.${milis}"
+    done
+}
+
+trap 'sig_handler' INT TERM HUP
+
+main > /dev/null 2>&1
