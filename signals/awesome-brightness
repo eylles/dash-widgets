@@ -9,8 +9,8 @@ brightness_signal="brightness::level"
 
 cont=0
 
-milisecs=500
-jitter_range="15-350"
+milisecs=200
+jitter_range="50-250"
 
 sig_handler () {
     cont=1
