@@ -2,7 +2,7 @@ local awful = require("awful")
 
 local currentPath = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
 
-local bar_daemon = currentPath .. "awesome-dynabar"
+local bar_daemon = currentPath .. "awesome-dynabar.sh"
 
 local pid = awful.spawn(bar_daemon, false)
 
