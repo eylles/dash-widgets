@@ -2,7 +2,7 @@ local awful = require("awful")
 
 local currentPath = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
 
-local leds_daemon = currentPath .. "awesome-leds"
+local leds_daemon = currentPath .. "awesome-leds.sh"
 
 local pid = awful.spawn(leds_daemon, false)
 
