@@ -1,6 +1,6 @@
 local awful = require("awful")
 local currentPath = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
-local sound_daemon = currentPath .. "awesome-sound"
+local sound_daemon = currentPath .. "awesome-sound.sh"
 
 local pid = awful.spawn(sound_daemon, false)
 
