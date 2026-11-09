@@ -64,11 +64,8 @@ function sound.new(options)
     local signal_volume = string.format("sound::%s::volume", device_type)
     local signal_mute = string.format("sound::%s::mute", device_type)
     local signal_port = string.format("sound::%s::port", device_type)
-    local get_default_device = string.format("pactl info")
-    local match_default_device = string.format("Default %s", pulse_device[3])
     local set_vol_cmd  = string.format("pactl set-%s-volume @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
     local set_mute_cmd = string.format("pactl set-%s-mute   @DEFAULT_%s@ ", pulse_device[1], pulse_device[2])
-    local update_cmd = string.format("pactl list %ss", pulse_device[1])
 
     -- the slider itself
     local vol_slide = wibox.widget {
