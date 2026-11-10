@@ -1,6 +1,6 @@
 local awful = require("awful")
 local currentPath = debug.getinfo(1, "S").source:sub(2):match("(.*/)")
-local brightness_daemon = currentPath .. "awesome-brightness"
+local brightness_daemon = currentPath .. "awesome-brightness.sh"
 
 local pid = awful.spawn(brightness_daemon, false)
 
