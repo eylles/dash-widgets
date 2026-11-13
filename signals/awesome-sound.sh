@@ -93,6 +93,9 @@ update_device_state() {
                         vol=${line#*" "}
                         vol=${vol#*/}
                         vol=${vol%%\%*}
+                        vol=${vol#*" "}
+                        vol=${vol#*" "}
+                        vol=${vol#*" "}
                         cur_vol=$vol
                         ;;
                     "Mute:"*)
