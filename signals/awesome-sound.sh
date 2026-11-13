@@ -90,9 +90,13 @@ update_device_state() {
             if [ "$in_device" -eq 1 ]; then
                 case "$line" in
                     "Volume:"*)
+                        # get values from Volume: key
                         vol=${line#*" "}
+                        # trim text before volume percentage
                         vol=${vol#*/}
+                        # trim text after percentage sign
                         vol=${vol%%\%*}
+                        # trim all preceeding whitespace
                         vol=${vol#*" "}
                         vol=${vol#*" "}
                         vol=${vol#*" "}
