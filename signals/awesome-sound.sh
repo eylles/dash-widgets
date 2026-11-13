@@ -90,7 +90,10 @@ update_device_state() {
             if [ "$in_device" -eq 1 ]; then
                 case "$line" in
                     "Volume:"*)
-                        cur_vol=$(echo "$line" | grep -oE '[0-9]+%' | head -n1 | tr -d '%')
+                        vol=${line#*" "}
+                        vol=${vol#*/}
+                        vol=${vol%%\%*}
+                        cur_vol=$vol
                         ;;
                     "Mute:"*)
                         cur_mute=${line#*: }
