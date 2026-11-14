@@ -49,6 +49,10 @@ get_def_dev() {
     pactl "get-default-${1}"
 }
 
+cleanup() {
+    rm "$STATE_FILE"
+}
+
 write_state_vars() {
     {
         printf '%s=%s\n' 'SINK_VOL'    "$SINK_VOL"
