@@ -176,3 +176,5 @@ main() {
 update_all
 
 main >/dev/null 2>&1
+
+trap cleanup EXIT INT TERM HUP
