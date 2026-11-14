@@ -29,6 +29,10 @@ SOURCE_PORT=""
 STATE_DIR="${XDG_RUNTIME_DIR}/awesome/sound"
 STATE_FILE="${STATE_DIR}/${XDG_SESSION_ID}.status"
 
+myname="${0##*/}"
+
+NOT_SILENT=""
+
 if [ ! -d "$STATE_DIR" ]; then
     mkdir -p "$STATE_DIR"
 fi
@@ -39,6 +43,12 @@ client_name="awesome-sound-id-${XDG_SESSION_ID}"
 
 # kill other instances if they exist
 pkill --full "pactl --client-name=$client_name subscribe" 2>/dev/null
+
+msgp() {
+    if [ -z "$NOT_SILENT" ]; then
+        printf '[%s] %s: %s\n' "$(date +'%Y-%m-%d %H:%M:%S')" "$myname" "$*"
+    fi
+}
 
 send_awesome_signal() {
     awesome-client "awesome.emit_signal('$1', '$2')" >/dev/null 2>&1
