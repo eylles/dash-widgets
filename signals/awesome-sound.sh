@@ -185,6 +185,6 @@ main() {
 # Run an initial bootstrap pass
 update_all
 
-main >/dev/null 2>&1
+main
 
 trap cleanup EXIT INT TERM HUP
