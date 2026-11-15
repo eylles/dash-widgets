@@ -52,7 +52,7 @@ msgp() {
 
 send_awesome_signal() {
     awesome-client "awesome.emit_signal('$1', '$2')" >/dev/null 2>&1
-    # printf '%s\n' "emitting '$1' with value '$2'"
+    msgp "emitting '$1' with value '$2'"
 }
 
 get_def_dev() {
@@ -177,7 +177,7 @@ main() {
     pactl --client-name="$client_name" subscribe 2>/dev/null | \
     grep --line-buffered -E "Event 'change' on (sink|source) #" | \
     while read -r event; do
-        printf '%s\n' "$event"
+        msgp "updating on event $event"
         update_all
     done
 }
