@@ -215,6 +215,8 @@ main() {
     done
 }
 
+NOT_SILENT="$(getval 'NOT_SILENT' "$CONFIG")"
+
 # Run an initial bootstrap pass
 update_all
 
