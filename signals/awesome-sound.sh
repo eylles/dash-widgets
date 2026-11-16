@@ -56,8 +56,6 @@ if [ ! -d "$STATE_DIR" ]; then
     mkdir -p "$STATE_DIR"
 fi
 
-: > "$STATE_FILE"
-
 client_name="awesome-sound-id-${XDG_SESSION_ID}"
 
 # kill other instances if they exist
