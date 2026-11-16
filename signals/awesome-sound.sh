@@ -33,6 +33,25 @@ myname="${0##*/}"
 
 NOT_SILENT=""
 
+CONF_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/awesome/signal-emitter-config/awesome-sound"
+CONFIG="$CONF_DIR/config.rc"
+
+if [ ! -d "$CONF_DIR" ]; then
+    mkdir -p "$CONF_DIR"
+fi
+
+if [ ! -f "$CONFIG" ]; then
+        cat << __HEREDOC__ > "$CONFIG"
+# vim: ft=sh
+# awesome-sound signal config file
+
+# Writing any string to this option will make this signal emitter to output debug information into
+# the awesome wm log file, the default is for the signal emitter to work in silent mode producing no
+# output only emitting signals.
+NOT_SILENT=""
+__HEREDOC__
+fi
+
 if [ ! -d "$STATE_DIR" ]; then
     mkdir -p "$STATE_DIR"
 fi
