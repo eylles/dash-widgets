@@ -215,6 +215,8 @@ main() {
 
 NOT_SILENT="$(getval 'NOT_SILENT' "$CONFIG")"
 
+write_state_vars
+
 # Run an initial bootstrap pass
 update_all
 
