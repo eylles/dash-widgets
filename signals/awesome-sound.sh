@@ -105,6 +105,15 @@ write_state_vars() {
     } > "$STATE_FILE"
 }
 
+load_state_vars() {
+    SINK_VOL="$(getval    'SINK_VOL'    "$STATE_FILE")"
+    SINK_MUTE="$(getval   'SINK_MUTE'   "$STATE_FILE")"
+    SINK_PORT="$(getval   'SINK_PORT'   "$STATE_FILE")"
+    SOURCE_VOL="$(getval  'SOURCE_VOL'  "$STATE_FILE")"
+    SOURCE_MUTE="$(getval 'SOURCE_MUTE' "$STATE_FILE")"
+    SOURCE_PORT="$(getval 'SOURCE_PORT' "$STATE_FILE")"
+}
+
 # Queries and streams changes for a device type (sink or source)
 update_device_state() {
     type="$1"       # "sink" or "source"
