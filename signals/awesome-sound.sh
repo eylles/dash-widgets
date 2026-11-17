@@ -166,8 +166,7 @@ update_device_state() {
             fi
         done
 
-        # load state file
-        . "$STATE_FILE"
+        load_state_vars
         # Conditionally emit changed values
         if [ "$type" = "sink" ]; then
             if [ "$cur_vol" != "$SINK_VOL" ] && [ ! -z "$cur_vol" ]; then
