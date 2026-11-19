@@ -155,9 +155,7 @@ update_device_state() {
                         # trim text after percentage sign
                         vol=${vol%%\%*}
                         # trim all preceeding whitespace
-                        vol=${vol#*" "}
-                        vol=${vol#*" "}
-                        vol=${vol#*" "}
+                        vol=${vol##*" "}
                         cur_vol=$vol
                         ;;
                     "Mute:"*)
