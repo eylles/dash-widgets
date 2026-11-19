@@ -93,7 +93,9 @@ get_def_dev() {
 }
 
 cleanup() {
-    rm "$STATE_FILE"
+    if [ -r "$STATE_FILE" ]; then
+        rm "$STATE_FILE"
+    fi
 }
 
 write_state_vars() {
