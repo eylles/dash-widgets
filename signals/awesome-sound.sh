@@ -228,6 +228,6 @@ write_state_vars
 # Run an initial bootstrap pass
 update_all
 
-main
-
 trap cleanup EXIT INT TERM HUP
+
+main
