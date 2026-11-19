@@ -76,7 +76,7 @@ getval(){
 }
 
 msgp() {
-    if [ -z "$NOT_SILENT" ]; then
+    if [ -n "$NOT_SILENT" ]; then
         printf '[%s] %s: %s\n' "$(date +'%Y-%m-%d %H:%M:%S')" "$myname" "$*"
     fi
 }
