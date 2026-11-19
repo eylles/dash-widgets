@@ -62,17 +62,19 @@ client_name="awesome-sound-id-${XDG_SESSION_ID}"
 pkill --full "pactl --client-name=$client_name subscribe" 2>/dev/null
 
 getval(){
-    # Setting 'IFS' tells 'read' where to split the string.
-    while IFS='=' read -r key val; do
-        # Skip over lines containing comments.
-        # (Lines starting with '#').
-        [ "${key##\#*}" ] || continue
-        # '$key' stores the key.
-        # '$val' stores the value.
-        if [ "$key" = "$1" ]; then
-            printf '%s\n' "$val"
-        fi
-    done < "$2"
+    if [ -r "$2" ]; then
+        # Setting 'IFS' tells 'read' where to split the string.
+        while IFS='=' read -r key val; do
+            # Skip over lines containing comments.
+            # (Lines starting with '#').
+            [ "${key##\#*}" ] || continue
+            # '$key' stores the key.
+            # '$val' stores the value.
+            if [ "$key" = "$1" ]; then
+                printf '%s\n' "$val"
+            fi
+        done < "$2"
+    fi
 }
 
 msgp() {
