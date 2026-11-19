@@ -216,7 +216,7 @@ update_all() {
 
 main() {
     pactl --client-name="$client_name" subscribe 2>/dev/null | \
-    grep --line-buffered -E "Event 'change' on (sink|source) #" | \
+    grep --line-buffered --extended-regexp "Event 'change' on (sink|source) #" | \
     while read -r event; do
         msgp "updating on event $event"
         update_all
