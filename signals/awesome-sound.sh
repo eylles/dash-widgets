@@ -223,13 +223,13 @@ main() {
     done
 }
 
+trap cleanup EXIT INT TERM HUP
+
 NOT_SILENT="$(getval 'NOT_SILENT' "$CONFIG")"
 
 write_state_vars
 
 # Run an initial bootstrap pass
 update_all
-
-trap cleanup EXIT INT TERM HUP
 
 main
