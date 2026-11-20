@@ -94,7 +94,7 @@ get_def_dev() {
 
 cleanup() {
     if [ -r "$STATE_FILE" ]; then
-        rm "$STATE_FILE"
+        rm -f -- "$STATE_FILE"
     fi
 }
 
