@@ -61,6 +61,9 @@ client_name="awesome-sound-id-${XDG_SESSION_ID}"
 # kill other instances if they exist
 pkill --full "pactl --client-name=$client_name subscribe" 2>/dev/null
 
+# Usage: getval "KEY" file
+# description: read a KEY=VALUE file and retrieve the VALUE of the passed KEY
+# return type: stdout string
 getval(){
     if [ -r "$2" ]; then
         # Setting 'IFS' tells 'read' where to split the string.
@@ -77,17 +80,26 @@ getval(){
     fi
 }
 
+# Usage: msgp "message"
+# description: output a formatted message if not running on silent mode
+# return type: stdout string
 msgp() {
     if [ -n "$NOT_SILENT" ]; then
         printf '[%s] %s: %s\n' "$(date +'%Y-%m-%d %H:%M:%S')" "$myname" "$*"
     fi
 }
 
+# Usage: send_awesome_signal "SIGNAL" "value"
+# description: emit a signal to awesome wm using awesome-client
+# return type: stdout string
 send_awesome_signal() {
     awesome-client "awesome.emit_signal('$1', '$2')" >/dev/null 2>&1
     msgp "emitting '$1' with value '$2'"
 }
 
+# Usage: get_def_dev "type"
+# description: get the default device of given type ( sink | source )
+# return type: stdout string
 get_def_dev() {
     pactl "get-default-${1}"
 }
@@ -98,6 +110,9 @@ cleanup() {
     fi
 }
 
+# Usage: write_state_vars
+# description: write current state vars to STATE_FILE
+# return type: void
 write_state_vars() {
     {
         printf '%s=%s\n' 'SINK_VOL'    "$SINK_VOL"
@@ -109,6 +124,9 @@ write_state_vars() {
     } > "$STATE_FILE"
 }
 
+# Usage: load_state_vars
+# description: load state vars from STATE_FILE
+# return type: void
 load_state_vars() {
     SINK_VOL="$(getval    'SINK_VOL'    "$STATE_FILE")"
     SINK_MUTE="$(getval   'SINK_MUTE'   "$STATE_FILE")"
@@ -118,7 +136,9 @@ load_state_vars() {
     SOURCE_PORT="$(getval 'SOURCE_PORT' "$STATE_FILE")"
 }
 
-# Queries and streams changes for a device type (sink or source)
+# Usage: update_device_state "type"
+# description: Queries and streams changes for a device type (sink | source)
+# return type: stdout string
 update_device_state() {
     type="$1"       # "sink" or "source"
 
