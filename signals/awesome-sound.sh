@@ -103,6 +103,10 @@ getval(){
             # '$key' stores the key.
             # '$val' stores the value.
             if [ "$key" = "$1" ]; then
+                # strip double quotes
+                val="$(strip_pattern "$val" "\"")"
+                # strip single quotes
+                val="$(strip_pattern "$val" "\'")"
                 printf '%s\n' "$val"
             fi
         done < "$2"
