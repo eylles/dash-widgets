@@ -79,6 +79,17 @@ rstrip () {
     printf '%s\n' "${1%%$2}"
 }
 
+# usage: strip_pattern "string" "pattern"
+# description: remove patter from Start and End of string
+# return type: string
+strip_pattern() {
+    string="$1"
+    pattern="$2"
+    string=$(lstrip "${string}" "$pattern")
+    string=$(rstrip "${string}" "$pattern")
+    printf '%s\n' "$string"
+}
+
 # Usage: getval "KEY" file
 # description: read a KEY=VALUE file and retrieve the VALUE of the passed KEY
 # return type: stdout string
