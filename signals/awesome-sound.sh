@@ -103,14 +103,22 @@ getval(){
             # '$key' stores the key.
             # '$val' stores the value.
             if [ "$key" = "$1" ]; then
-                # strip double quotes
-                val="$(strip_pattern "$val" "\"")"
-                # strip single quotes
-                val="$(strip_pattern "$val" "\'")"
                 printf '%s\n' "$val"
             fi
         done < "$2"
     fi
+}
+
+# Usage: getval_stripped "KEY" file
+# description: read a KEY=VALUE file, output the VALUE of the passed KEY stripped from any quotation
+# return type: stdout string
+getval_stripped() {
+    val="$(getval "$1" "$2")"
+    # strip double quotes
+    val="$(strip_pattern "$val" "\"")"
+    # strip single quotes
+    val="$(strip_pattern "$val" "\'")"
+    printf '%s\n' "$val"
 }
 
 # Usage: msgp "message"
