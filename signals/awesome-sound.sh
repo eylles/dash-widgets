@@ -224,33 +224,33 @@ update_device_state() {
         load_state_vars
         # Conditionally emit changed values
         if [ "$type" = "sink" ]; then
-            if [ "$cur_vol" != "$SINK_VOL" ] && [ ! -z "$cur_vol" ]; then
+            if [ "$cur_vol" != "$SINK_VOL" ] && [ -n "$cur_vol" ]; then
                 send_awesome_signal "$SIG_VOL_SINK" "$cur_vol"
                 SINK_VOL="$cur_vol"
                 changed=1
             fi
-            if [ "$cur_mute" != "$SINK_MUTE" ] && [ ! -z "$cur_mute" ]; then
+            if [ "$cur_mute" != "$SINK_MUTE" ] && [ -n "$cur_mute" ]; then
                 send_awesome_signal "$SIG_MUTE_SINK" "$cur_mute"
                 SINK_MUTE="$cur_mute"
                 changed=1
             fi
-            if [ "$cur_port" != "$SINK_PORT" ] && [ ! -z "$cur_port" ]; then
+            if [ "$cur_port" != "$SINK_PORT" ] && [ -n "$cur_port" ]; then
                 send_awesome_signal "$SIG_PORT_SINK" "$cur_port"
                 SINK_PORT="$cur_port"
                 changed=1
             fi
         elif [ "$type" = "source" ]; then
-            if [ "$cur_vol" != "$SOURCE_VOL" ] && [ ! -z "$cur_vol" ]; then
+            if [ "$cur_vol" != "$SOURCE_VOL" ] && [ -n "$cur_vol" ]; then
                 send_awesome_signal "$SIG_VOL_SOURCE" "$cur_vol"
                 SOURCE_VOL="$cur_vol"
                 changed=1
             fi
-            if [ "$cur_mute" != "$SOURCE_MUTE" ] && [ ! -z "$cur_mute" ]; then
+            if [ "$cur_mute" != "$SOURCE_MUTE" ] && [ -n "$cur_mute" ]; then
                 send_awesome_signal "$SIG_MUTE_SOURCE" "$cur_mute"
                 SOURCE_MUTE="$cur_mute"
                 changed=1
             fi
-            if [ "$cur_port" != "$SOURCE_PORT" ] && [ ! -z "$cur_port" ]; then
+            if [ "$cur_port" != "$SOURCE_PORT" ] && [ -n "$cur_port" ]; then
                 send_awesome_signal "$SIG_PORT_SOURCE" "$cur_port"
                 SOURCE_PORT="$cur_port"
                 changed=1
