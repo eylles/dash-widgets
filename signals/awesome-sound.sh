@@ -61,24 +61,6 @@ client_name="awesome-sound-id-${XDG_SESSION_ID}"
 # kill other instances if they exist
 pkill --full "pactl --client-name=$client_name subscribe" 2>/dev/null
 
-# usage: lstrip "string" "pattern"
-# description: remove patter from start of string
-# return type: string
-lstrip () {
-    # we want these to match as patterns
-    # shellcheck disable=SC2295
-    printf '%s\n' "${1##$2}"
-}
-
-# usage: rstrip "string" "pattern"
-# description: remove patter from end of string
-# return type: string
-rstrip () {
-    # we want these to match as patterns
-    # shellcheck disable=SC2295
-    printf '%s\n' "${1%%$2}"
-}
-
 # usage: strip_pattern "string" "pattern"
 # description: remove patter from Start and End of string
 # return type: string
