@@ -85,8 +85,12 @@ rstrip () {
 strip_pattern() {
     string="$1"
     pattern="$2"
-    string=$(lstrip "${string}" "$pattern")
-    string=$(rstrip "${string}" "$pattern")
+    # we want these to match as patterns
+    # shellcheck disable=SC2295
+    string="${string##$pattern}"
+    # we want these to match as patterns
+    # shellcheck disable=SC2295
+    string="${string%%$pattern}"
     printf '%s\n' "$string"
 }
 
