@@ -169,12 +169,30 @@ write_state_vars() {
 # description: load state vars from STATE_FILE
 # return type: void
 load_state_vars() {
-    SINK_VOL="$(getval    'SINK_VOL'    "$STATE_FILE")"
-    SINK_MUTE="$(getval   'SINK_MUTE'   "$STATE_FILE")"
-    SINK_PORT="$(getval   'SINK_PORT'   "$STATE_FILE")"
-    SOURCE_VOL="$(getval  'SOURCE_VOL'  "$STATE_FILE")"
-    SOURCE_MUTE="$(getval 'SOURCE_MUTE' "$STATE_FILE")"
-    SOURCE_PORT="$(getval 'SOURCE_PORT' "$STATE_FILE")"
+    if [ -r "$STATE_FILE" ]; then
+        while IFS='=' read -r key val; do
+            case "$key" in
+                'SINK_VOL')
+                    SINK_VOL="$val"
+                    ;;
+                'SINK_MUTE')
+                    SINK_MUTE="$val"
+                    ;;
+                'SINK_PORT')
+                    SINK_PORT="$val"
+                    ;;
+                'SOURCE_VOL')
+                    SOURCE_VOL="$val"
+                    ;;
+                'SOURCE_MUTE')
+                    SOURCE_MUTE="$val"
+                    ;;
+                'SOURCE_PORT')
+                    SOURCE_PORT="$val"
+                    ;;
+            esac
+        done < "$STATE_FILE"
+    fi
 }
 
 # Usage: update_device_state "type"
